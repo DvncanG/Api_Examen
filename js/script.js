@@ -9,7 +9,7 @@ const modal_container = document.getElementById("modal_container");
 const carrito__compra = document.getElementById("carrito__compra");
 let productos = [];
 let objeto_json = {};
-let carrito = []; 
+let carrito = [];
 
 const createItemsCard = (product) => {
   let card = document.createElement("ARTICLE");
@@ -65,64 +65,66 @@ const generarCardsProductos = (arrayProductos) => {
 
 const API = () => {
   fetch("https://fakestoreapi.com/products")
-  .then((response) => {
-    //console.log(response)
-    return response.json();
-  })
-  .then((products) => {
-    //Guardo los productos en un array productos
-    //console.log(products)
-    products.map((product) => {
-      console.log(product)
-      //Guardo los productos
-      productos.push(
-        new Producto(
-          product.id,
-          product.title,
-          (product.price * 0.8).toFixed(2),
-          product.image
-        )
-      );
-    });
-    generarCardsProductos(productos);
+    .then((response) => {
+      //console.log(response)
+      return response.json();
+    })
+    .then((products) => {
+      //Guardo los productos en un array productos
+      //console.log(products)
+      products.map((product) => {
+        console.log(product)
+        //Guardo los productos
+        productos.push(
+          new Producto(
+            product.id,
+            product.title,
+            (product.price * 0.8).toFixed(2),
+            product.image
+          )
+        );
+      });
+      generarCardsProductos(productos);
 
-  })
-  .catch((error) => console.log(error));
-  
+    })
+    .catch((error) => console.log(error));
+
 };
 
-const modal = (e) => {
-  if (e.target.classList.contains("card__button")) {
-    console.log(e.target);
-    objeto_json ={
-      "titulo": e.target.parentElement.children[1].textContent,
-      "precio": e.target.parentElement.children[2].children[0].textContent,
-      "imagen": e.target.parentElement.children[0].src
+const modal = (ev) => {
+  if (ev.target.classList.contains("card__button")) {
+    objeto_json = {
+      "titulo": ev.target.parentElement.children[1].textContent,
+      "precio": ev.target.parentElement.children[2].children[0].textContent,
+      "imagen": ev.target.parentElement.children[0].src
     }
-    console.log(objeto_json)
-  modal_container.classList.add("modal__mostrar");
+    modal_container.classList.add("modal__mostrar");
   }
-};
-
-const modal_añadir = (ev) => {
   if (ev.target.classList.contains("modal__button")) {
-    console.log(ev.target);
-
-    if (localStorage.getItem("carrito") != null) {
-      localStorage.getItem("carrito", JSON.stringify(objeto_json));
-      carrito = JSON.parse(localStorage.getItem("carrito"));  
-    }
-    carrito.push(objeto_json);
-    localStorage.setItem("carrito", JSON.stringify(carrito));
+    carrito__compra.classList.add("verde")
     modal_container.classList.remove("modal__mostrar");
-  }else if (ev.target.classList.contains("modal__button--cancelar")) {
+    if (localStorage.getItem("carrito") === null) {
+      carrito.push(objeto_json)
+      console.log(carrito)
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+    } else {
+      carrito = []
+      carrito = JSON.parse(localStorage.getItem("carrito"));
+      carrito.push(objeto_json);
+      console.log(carrito)
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      
+
+    }
+
+  }
+  if (ev.target.classList.contains("modal__button--cancelar")) {
     modal_container.classList.remove("modal__mostrar");
   }
+};
 
-}
 
 //PARA CREAR UNA TARJETA
 
-document.addEventListener("DOMContentLoaded", API); 
+document.addEventListener("DOMContentLoaded", API);
 document.addEventListener("click", modal);
-document.addEventListener("click", modal_añadir);
